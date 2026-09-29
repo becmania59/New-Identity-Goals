@@ -274,10 +274,12 @@ $('saveSettingsBtn').addEventListener('click', () => {
 function buildPhaseEditor() {
   const wrap = $('phaseEditor');
   wrap.innerHTML = '';
+  const currentPhaseIndex = programPosition().phaseIndex;
   state.phases.forEach((phase, pIndex) => {
     const card = document.createElement('div');
-    card.className = 'phase-edit-card';
-    card.innerHTML = `<div class="phase-edit-grid"><label>Name<input data-phase-name="${pIndex}" type="text"></label><label>Days<input data-phase-days="${pIndex}" type="text" inputmode="numeric"></label></div><label>Intent<input data-phase-intent="${pIndex}" type="text"></label><div data-habits="${pIndex}"></div>`;
+    card.className = `phase-edit-card${pIndex === currentPhaseIndex ? ' current-edit' : ''}`;
+    card.dataset.phaseCard = pIndex;
+    card.innerHTML = `<div class="phase-edit-grid"><label>Name<input data-phase-name="${pIndex}" type="text"></label><label>Days<input data-phase-days="${pIndex}" type="text" inputmode="numeric"></label></div><label>Intent<input data-phase-intent="${pIndex}" type="text"></label><div class="activity-edit-header"><strong>Daily activities</strong><span class="muted small">Activity · what counts · tag</span></div><div data-habits="${pIndex}"></div>`;
     card.querySelector(`[data-phase-name="${pIndex}"]`).value = phase.name;
     card.querySelector(`[data-phase-days="${pIndex}"]`).value = phase.days;
     card.querySelector(`[data-phase-intent="${pIndex}"]`).value = phase.intent;
@@ -285,15 +287,30 @@ function buildPhaseEditor() {
     phase.habits.forEach((habit, hIndex) => {
       const row = document.createElement('div');
       row.className = 'habit-edit-row';
-      row.innerHTML = `<input data-h-title="${pIndex}-${hIndex}" type="text" aria-label="Habit title"><input data-h-detail="${pIndex}-${hIndex}" type="text" aria-label="Habit detail"><input data-h-tag="${pIndex}-${hIndex}" type="text" aria-label="Habit tag">`;
-      row.children[0].value = habit.title; row.children[1].value = habit.detail; row.children[2].value = habit.tag;
+      row.innerHTML = `<input data-h-title="${pIndex}-${hIndex}" type="text" aria-label="Activity title" placeholder="Activity"><input data-h-detail="${pIndex}-${hIndex}" type="text" aria-label="What counts as completion" placeholder="What counts as complete"><input data-h-tag="${pIndex}-${hIndex}" type="text" aria-label="Activity tag" placeholder="Tag">`;
+      row.children[0].value = habit.title;
+      row.children[1].value = habit.detail;
+      row.children[2].value = habit.tag;
       habitsWrap.appendChild(row);
     });
     wrap.appendChild(card);
   });
 }
 
-$('editPhasesBtn').addEventListener('click', () => { buildPhaseEditor(); $('phasesDialog').showModal(); });
+function openPhaseEditor(focusCurrent = false) {
+  buildPhaseEditor();
+  $('phasesDialog').showModal();
+  if (focusCurrent) {
+    const phaseIndex = programPosition().phaseIndex;
+    requestAnimationFrame(() => {
+      const card = document.querySelector(`[data-phase-card="${phaseIndex}"]`);
+      card?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    });
+  }
+}
+
+$('editPhasesBtn').addEventListener('click', () => openPhaseEditor(false));
+$('editActivitiesBtn').addEventListener('click', () => openPhaseEditor(true));
 $('savePhasesBtn').addEventListener('click', (e) => {
   e.preventDefault();
   state.phases = state.phases.map((phase, pIndex) => ({
@@ -313,7 +330,10 @@ $('savePhasesBtn').addEventListener('click', (e) => {
 $('exportBtn').addEventListener('click', () => {
   const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = `become-backup-${localISO()}.json`; a.click();
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `become-backup-${localISO()}.json`;
+  a.click();
   URL.revokeObjectURL(url);
 });
 
@@ -326,7 +346,10 @@ let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; $('installBtn').classList.remove('hidden'); });
 $('installBtn').addEventListener('click', async () => {
   if (!deferredPrompt) return;
-  deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null; $('installBtn').classList.add('hidden');
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  $('installBtn').classList.add('hidden');
 });
 
 if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
