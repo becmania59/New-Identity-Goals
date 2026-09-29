@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#6d5dfc" />
+  <meta name="description" content="A phased identity-based habit program for deliberate change." />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>Become</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">IDENTITY PROGRAM</div>
+        <h1>Become</h1>
+      </div>
+      <button id="installBtn" class="ghost hidden" type="button">Install</button>
+    </header>
+
+    <main>
+      <section class="hero card">
+        <div class="hero-copy">
+          <span id="phaseBadge" class="pill">Phase 1</span>
+          <h2 id="phaseName">Recalibrate</h2>
+          <p id="phaseIntent" class="muted">Build evidence that you are someone who follows through.</p>
+        </div>
+        <div class="progress-ring" aria-label="Current phase progress">
+          <svg viewBox="0 0 120 120" role="img">
+            <circle class="ring-bg" cx="60" cy="60" r="48"></circle>
+            <circle id="ringProgress" class="ring-progress" cx="60" cy="60" r="48"></circle>
+          </svg>
+          <div class="ring-label">
+            <strong id="dayNumber">Day 1</strong>
+            <span id="phaseLength">of 21</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="identity card">
+        <div class="section-title-row">
+          <div>
+            <div class="eyebrow">NORTH STAR</div>
+            <h3>Your identity</h3>
+          </div>
+          <button id="editIdentityBtn" class="text-btn" type="button">Edit</button>
+        </div>
+        <blockquote id="identityText">I run my life deliberately. I am organised, visible, physically active and commercially valuable. I follow through on small things because that is how I trust myself with bigger things.</blockquote>
+        <div class="goal-row">
+          <span>Career target</span>
+          <strong id="careerGoal">Promotion / new role · $13k/month</strong>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="section-title-row">
+          <div>
+            <div class="eyebrow">TODAY</div>
+            <h3>Create evidence</h3>
+          </div>
+          <span id="todayDate" class="muted small"></span>
+        </div>
+        <div id="habitList" class="habit-list"></div>
+        <div class="completion-bar"><div id="completionFill"></div></div>
+        <p id="completionText" class="muted small">0 of 5 complete</p>
+      </section>
+
+      <section class="card">
+        <div class="eyebrow">EVIDENCE</div>
+        <h3>What did you prove today?</h3>
+        <textarea id="evidenceInput" rows="3" placeholder="One sentence is enough. Example: I kept my promise and walked before opening my laptop."></textarea>
+        <button id="saveEvidenceBtn" class="primary" type="button">Save evidence</button>
+        <p id="saveStatus" class="save-status" aria-live="polite"></p>
+      </section>
+
+      <section class="card stats-card">
+        <div class="eyebrow">MOMENTUM</div>
+        <h3>Consistency, not perfection</h3>
+        <div class="stats-grid">
+          <div><strong id="consistencyStat">0%</strong><span>7-day consistency</span></div>
+          <div><strong id="daysWonStat">0</strong><span>days at 80%+</span></div>
+          <div><strong id="evidenceStat">0</strong><span>evidence notes</span></div>
+        </div>
+        <div id="weekDots" class="week-dots" aria-label="Last seven days"></div>
+      </section>
+
+      <section class="card">
+        <div class="section-title-row">
+          <div>
+            <div class="eyebrow">PHASES</div>
+            <h3>Ascension path</h3>
+          </div>
+          <button id="editPhasesBtn" class="text-btn" type="button">Edit</button>
+        </div>
+        <div id="phaseTimeline" class="phase-timeline"></div>
+      </section>
+
+      <section class="card review-card">
+        <div class="section-title-row">
+          <div>
+            <div class="eyebrow">SUNDAY</div>
+            <h3>Identity review</h3>
+          </div>
+          <button id="openReviewBtn" class="secondary" type="button">Open review</button>
+        </div>
+        <p class="muted">Review evidence, remove friction and choose the single career move that matters most next week.</p>
+        <div id="lastReviewSummary" class="review-summary hidden"></div>
+      </section>
+
+      <section class="card settings-card">
+        <details>
+          <summary>Program settings</summary>
+          <div class="settings-body">
+            <label>Program start date<input id="startDateInput" type="date" /></label>
+            <label class="toggle-row"><input id="autoAscendInput" type="checkbox" checked /> <span>Automatically move to the next phase every 3 weeks</span></label>
+            <button id="saveSettingsBtn" class="secondary" type="button">Save settings</button>
+            <button id="exportBtn" class="ghost" type="button">Export my data</button>
+            <button id="resetBtn" class="danger ghost" type="button">Reset program</button>
+          </div>
+        </details>
+      </section>
+    </main>
+
+    <footer>Small proof, repeated. That is the program.</footer>
+  </div>
+
+  <dialog id="identityDialog">
+    <form method="dialog" class="dialog-card" id="identityForm">
+      <div class="section-title-row"><h3>Edit identity</h3><button class="icon-btn" value="cancel" aria-label="Close">×</button></div>
+      <label>Identity statement<textarea id="identityEdit" rows="5"></textarea></label>
+      <label>Career target<input id="careerGoalEdit" type="text" /></label>
+      <div class="dialog-actions"><button class="ghost" value="cancel">Cancel</button><button id="saveIdentityBtn" class="primary" value="default">Save</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="reviewDialog">
+    <form method="dialog" class="dialog-card wide" id="reviewForm">
+      <div class="section-title-row"><div><div class="eyebrow">WEEKLY REVIEW</div><h3>Sunday identity review</h3></div><button class="icon-btn" value="cancel" aria-label="Close">×</button></div>
+      <label>1. What did I do this week that matched who I want to become?<textarea id="review1" rows="3"></textarea></label>
+      <label>2. Where did I repeatedly create friction?<textarea id="review2" rows="3"></textarea></label>
+      <label>3. What behaviour did I avoid?<textarea id="review3" rows="3"></textarea></label>
+      <label>4. What can I redesign in my environment instead of relying on willpower?<textarea id="review4" rows="3"></textarea></label>
+      <label>5. What is the single most important career move next week?<textarea id="review5" rows="3"></textarea></label>
+      <label>6. Did my behaviour move me toward the $13k/month version of my career?<textarea id="review6" rows="3"></textarea></label>
+      <div class="dialog-actions"><button class="ghost" value="cancel">Cancel</button><button id="saveReviewBtn" class="primary" value="default">Save review</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="phasesDialog">
+    <form method="dialog" class="dialog-card wide" id="phasesForm">
+      <div class="section-title-row"><div><div class="eyebrow">PROGRAM DESIGN</div><h3>Edit phases</h3></div><button class="icon-btn" value="cancel" aria-label="Close">×</button></div>
+      <p class="muted small">Each phase lasts three weeks by default. Keep five daily identity anchors and increase the standard gradually.</p>
+      <div id="phaseEditor"></div>
+      <div class="dialog-actions"><button class="ghost" value="cancel">Cancel</button><button id="savePhasesBtn" class="primary" value="default">Save phases</button></div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
