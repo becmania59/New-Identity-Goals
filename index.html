@@ -49,6 +49,7 @@
           <button id="editIdentityBtn" class="text-btn" type="button">Edit</button>
         </div>
         <blockquote id="identityText">I run my life deliberately. I am organised, visible, physically active and commercially valuable. I follow through on small things because that is how I trust myself with bigger things.</blockquote>
+        <p class="personalise-hint muted small">This is an example, not a rule. Tap <strong>Edit</strong> to make the identity and goal yours. Your entries stay on this device.</p>
         <div class="goal-row">
           <span>Career target</span>
           <strong id="careerGoal">Promotion / new role · $13k/month</strong>
@@ -61,7 +62,10 @@
             <div class="eyebrow">TODAY</div>
             <h3>Create evidence</h3>
           </div>
-          <span id="todayDate" class="muted small"></span>
+          <div class="today-actions">
+            <span id="todayDate" class="muted small"></span>
+            <button id="editActivitiesBtn" class="text-btn" type="button">Edit activities</button>
+          </div>
         </div>
         <div id="habitList" class="habit-list"></div>
         <div class="completion-bar"><div id="completionFill"></div></div>
@@ -152,7 +156,7 @@
   <dialog id="phasesDialog">
     <form method="dialog" class="dialog-card wide" id="phasesForm">
       <div class="section-title-row"><div><div class="eyebrow">PROGRAM DESIGN</div><h3>Edit phases</h3></div><button class="icon-btn" value="cancel" aria-label="Close">×</button></div>
-      <p class="muted small">Each phase lasts three weeks by default. Keep five daily identity anchors and increase the standard gradually.</p>
+      <p class="muted small">Each phase lasts three weeks by default. The activities below are examples: edit the title, what counts as completion, and the short tag so the program fits your life. Increase the standard gradually rather than all at once.</p>
       <div id="phaseEditor"></div>
       <div class="dialog-actions"><button class="ghost" value="cancel">Cancel</button><button id="savePhasesBtn" class="primary" value="default">Save phases</button></div>
     </form>
